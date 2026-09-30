@@ -544,19 +544,43 @@ $("form").addEventListener("submit", async (ev) => {
   btn.disabled = true; btn.textContent = "Enviando…";
   mostrarErro("");
   try {
-    const r = await fetch(APPS_SCRIPT_URL, {
-      method: "POST",
-      headers: { "Content-Type": "text/plain;charset=utf-8" },
-      body: JSON.stringify(payload)
-    });
-    const j = await r.json();
-    if (!j.ok) throw new Error(j.erro || "erro");
+    let r;
+    try {
+      r = await fetch(APPS_SCRIPT_URL, {
+        method: "POST",
+        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        body: JSON.stringify(payload)
+      });
+    } catch (e) {
+      const x = new Error("rede: " + (e && e.message ? e.message : e));
+      x.tipo = "rede";
+      throw x;
+    }
+    const texto = await r.text();
+    let j;
+    try { j = JSON.parse(texto); }
+    catch (_) {
+      const x = new Error("resposta inválida (HTTP " + r.status + "): " + texto.slice(0, 120).replace(/\s+/g, " "));
+      x.tipo = "resposta";
+      throw x;
+    }
+    if (!j.ok) {
+      const x = new Error("servidor: " + (j.erro || "erro"));
+      x.tipo = "servidor";
+      throw x;
+    }
     $("protocolo").textContent = j.protocolo;
     $("form").hidden = true;
     $("resultado").hidden = false;
     $("resultado").scrollIntoView({ behavior: "smooth", block: "start" });
   } catch (err) {
-    mostrarErro("Não conseguimos enviar. Verifique sua internet e toque em \"Enviar solicitação\" de novo. Seus dados continuam na tela.");
+    console.error(err);
+    const base = {
+      rede: "Não conseguimos falar com o servidor. Verifique sua internet e tente de novo.",
+      resposta: "O servidor respondeu de um jeito inesperado. Avise a Secretaria se o problema continuar.",
+      servidor: "O servidor recusou o envio. Confira os campos e tente de novo."
+    }[err.tipo] || "Não conseguimos enviar. Tente de novo.";
+    mostrarErro(base + " Seus dados continuam na tela. [Detalhe técnico: " + (err.message || err) + "]");
   } finally {
     btn.disabled = false; btn.textContent = "Enviar solicitação";
   }
