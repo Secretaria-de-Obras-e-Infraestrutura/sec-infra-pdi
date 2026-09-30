@@ -648,7 +648,7 @@ $("btn-consultar").addEventListener("click", async () => {
       saida.innerHTML = '<div class="msg erro-g">Protocolo não encontrado. Confira o número digitado.</div>';
     } else {
       saida.innerHTML = `<div class="msg" style="background:#f2faf5;border:1px solid #a9d3b6">
-        <b>${j.protocolo}</b><br>Tipo: ${j.tipo}<br>Enviado em: ${j.data}<br>Situação: <b>${j.status}</b></div>`;
+        <b>${j.protocolo}</b><br>Tipo: ${j.tipo}<br>Enviado em: ${j.data}<br>Situação: <b>${j.status}</b>${j.atendidoEm ? "<br>Atendido em: " + j.atendidoEm : ""}</div>`;
     }
   } catch (_) {
     saida.innerHTML = '<div class="msg erro-g">Não foi possível consultar agora. Tente novamente em instantes.</div>';
