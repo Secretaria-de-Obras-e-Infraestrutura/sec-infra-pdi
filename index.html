@@ -411,7 +411,9 @@ $("btn-gps").addEventListener("click", () => {
     (err) => {
       btn.disabled = false; btn.innerHTML = textoOriginal;
       const msgs = {
-        1: "A localização foi bloqueada. Permita o acesso à localização nas configurações do navegador, ou toque no mapa para marcar o ponto.",
+        1: /iPhone|iPad|iPod/.test(navigator.userAgent)
+          ? "A localização está bloqueada neste iPhone. Se você abriu o link pelo WhatsApp ou Instagram, abra no Safari. Depois vá em Ajustes > Privacidade e Segurança > Serviços de Localização > Sites do Safari e escolha \"Ao usar o app\". Ou, se preferir, toque no mapa para marcar o ponto."
+          : "A localização foi bloqueada. Permita o acesso à localização nas configurações do navegador, ou toque no mapa para marcar o ponto.",
         2: "Não foi possível descobrir sua localização agora (sinal de GPS fraco). Vá para um lugar aberto e tente de novo, ou toque no mapa.",
         3: "Demorou demais para achar sua localização. Tente de novo ou toque no mapa."
       };
